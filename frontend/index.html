@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>视频搞笑检测系统</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #6366f1;
+      --primary-light: #818cf8;
+      --primary-dark: #4f46e5;
+      --accent-color: #f59e0b;
+      --accent-light: #fbbf24;
+      --success-color: #10b981;
+      --danger-color: #ef4444;
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-card: #334155;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --border-color: #475569;
+      --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .funny-font {
+      font-family: 'Ma Shan Zheng', cursive;
+    }
+
+    /* 背景动画 */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .bg-animation::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.08) 0%, transparent 40%);
+      animation: bgMove 20s ease-in-out infinite;
+    }
+
+    @keyframes bgMove {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(2%, 2%) rotate(1deg); }
+      66% { transform: translate(-1%, 1%) rotate(-1deg); }
+    }
+
+    /* 浮动emoji动画 */
+    .floating-emojis {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .floating-emoji {
+      position: absolute;
+      font-size: 2rem;
+      opacity: 0.3;
+      animation: floatUp 15s ease-in-out infinite;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.3; }
+      90% { opacity: 0.3; }
+      100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* 导航栏 */
+    .navbar {
+      background: rgba(30, 41, 59, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .navbar-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--gradient-1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .logo-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: var(--gradient-1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    .nav-btn:hover, .nav-btn.active {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+      color: white;
+    }
+
+    /* 主容器 */
+    .main-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* 页面标题 */
+    .page-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      animation: fadeInUp 0.8s ease;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .page-title {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .page-subtitle {
+      color: var(--text-secondary);
+      font-size: 1.2rem;
+    }
+
+    /* 搜索区域 */
+    .search-section {
+      background: var(--bg-secondary);
+      border-radius: 20px;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      border: 1px solid var(--border-color);
+      animation: fadeInUp 0.8s ease 0.2s both;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .input-wrapper {
+      flex: 1;
+      min-width: 300px;
+      position: relative;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 1rem 1.5rem;
+      padding-left: 3rem;
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      color: var(--text-primary);
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+    }
+
+    .btn {
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--gradient-1);
+      color: white;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 2px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--primary-color);
+      color: var(--primary-light);
+    }
+
+    .btn-accent {
+      background: var(--gradient-2);
+      color: white;
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+    }
+
+    .btn-accent:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* 视频卡片网格 */
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .video-card {
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation: fadeInUp 0.6s ease both;
+    }
+
+    .video-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--primary-color);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .video-thumbnail {
+      position: relative;
+      height: 180px;
+      background: var(--bg-card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      overflow: hidden;
+    }
+
+    .video-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .score-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      backdrop-filter: blur(10px);
+    }
+
+    .score-high {
+      background: linear-gradient(135deg, #ef4444, #f97316);
+      color: white;
+    }
+
+    .score-medium {
+      background: linear-gradient(135deg, #f59e0b, #eab308);
+      color: white;
+    }
+
+    .score-low {
+      background: linear-gradient(135deg, #64748b, #475569);
+      color: white;
+    }
+
+    .video-info {
+      padding: 1.5rem;
+    }
+
+    .video-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .video-meta {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .video-meta span {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .video-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .video-actions .btn {
+      flex: 1;
+      justify-content: center;
+      padding: 0.75rem;
+      font-size: 0.85rem;
+    }
+
+    /* 评分详情卡片 */
+    .score-detail-card {
+      background: var(--bg-secondary);
+      border-radius: 20px;
+      padding: 2rem;
+      border: 1px solid var(--border-color);
+      margin-bottom: 2rem;
+    }
+
+    .score-header {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .score-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 2rem;
+      position: relative;
+    }
+
+    .score-circle::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      background: inherit;
+      z-index: -1;
+      filter: blur(15px);
+      opacity: 0.5;
+    }
+
+    .score-circle.high { background: var(--gradient-2); }
+    .score-circle.medium { background: var(--gradient-3); }
+    .score-circle.low { background: linear-gradient(135deg, #64748b, #475569); }
+
+    .score-circle span {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    .score-info h3 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .score-info p {
+      color: var(--text-secondary);
+    }
+
+    .score-breakdown {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+
+    .score-item {
+      background: var(--bg-card);
+      padding: 1rem;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .score-item-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .score-item-label {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+
+    .funny-elements {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .funny-elements h4 {
+      margin-bottom: 1rem;
+      color: var(--accent-color);
+    }
+
+    .element-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .element-tag {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--accent-light);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+    }
+
+    /* 模态框 */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 2rem;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal {
+      background: var(--bg-secondary);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow: auto;
+      border: 1px solid var(--border-color);
+      animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(50px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h2 {
+      font-size: 1.3rem;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .modal-close:hover {
+      color: var(--danger-color);
+    }
+
+    .modal-body {
+      padding: 2rem;
+    }
+
+    /* 表单 */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 1rem;
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    /* 结果显示 */
+    .result-box {
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .result-item:last-child {
+      border-bottom: none;
+    }
+
+    .result-label {
+      color: var(--text-secondary);
+    }
+
+    .result-value {
+      font-weight: 600;
+    }
+
+    /* 加载动画 */
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      gap: 1rem;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid var(--border-color);
+      border-top-color: var(--primary-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* 空状态 */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-secondary);
+    }
+
+    .empty-icon {
+      font-size: 5rem;
+      margin-bottom: 1rem;
+    }
+
+    .empty-title {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+
+    /* 评分进度条 */
+    .progress-bar {
+      height: 8px;
+      background: var(--bg-card);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 1s ease;
+    }
+
+    .progress-fill.high { background: var(--gradient-2); }
+    .progress-fill.medium { background: var(--gradient-3); }
+    .progress-fill.low { background: linear-gradient(90deg, #64748b, #475569); }
+
+    /* 进度指示器 */
+    .progress-indicator {
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .progress-step {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem 0;
+      color: var(--text-secondary);
+      transition: all 0.3s;
+    }
+
+    .progress-step.active {
+      color: var(--primary-light);
+    }
+
+    .progress-step.completed {
+      color: var(--success-color);
+    }
+
+    .progress-step-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--bg-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+    }
+
+    .progress-step.active .progress-step-icon {
+      background: var(--primary-color);
+      animation: pulse 1.5s infinite;
+    }
+
+    .progress-step.completed .progress-step-icon {
+      background: var(--success-color);
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .progress-step-text {
+      flex: 1;
+      font-size: 0.95rem;
+    }
+
+    /* 视频链接样式 */
+    .video-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background: var(--bg-card);
+      border-radius: 8px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .video-link a {
+      color: var(--primary-light);
+      text-decoration: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .video-link a:hover {
+      text-decoration: underline;
+    }
+
+    /* 保存路径样式 */
+    .save-path-box {
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-top: 1rem;
+      border: 1px solid var(--success-color);
+    }
+
+    .save-path-box h4 {
+      color: var(--success-color);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .save-path-box p {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      word-break: break-all;
+      font-family: monospace;
+      background: var(--bg-secondary);
+      padding: 0.5rem;
+      border-radius: 6px;
+      margin-top: 0.5rem;
+    }
+
+    /* 详情扩展信息 */
+    .detail-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .detail-stat-item {
+      background: var(--bg-card);
+      padding: 1rem;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .detail-stat-value {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent-light);
+    }
+
+    .detail-stat-label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-top: 0.25rem;
+    }
+
+    /* Toast 通知 */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      color: white;
+      font-weight: 500;
+      z-index: 2000;
+      animation: slideInRight 0.3s ease;
+    }
+
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(100px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .toast.success { background: var(--success-color); }
+    .toast.error { background: var(--danger-color); }
+    .toast.info { background: var(--primary-color); }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .page-title { font-size: 2rem; }
+      .search-box { flex-direction: column; }
+      .input-wrapper { min-width: 100%; }
+      .btn { width: 100%; justify-content: center; }
+      .score-header { flex-direction: column; text-align: center; }
+    }
+
+    /* 评论区样式 */
+    .comments-section {
+      margin-top: 2rem;
+    }
+
+    .comment-item {
+      background: var(--bg-card);
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 0.75rem;
+    }
+
+    .comment-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .comment-user {
+      font-weight: 600;
+      color: var(--primary-light);
+    }
+
+    .comment-time {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+
+    .comment-content {
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    /* 弹幕列表 */
+    .danmu-list {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .danmu-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .danmu-time {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      min-width: 60px;
+    }
+
+    .danmu-text {
+      flex: 1;
+    }
+
+    /* 标签页 */
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.5rem;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      border-radius: 8px 8px 0 0;
+      transition: all 0.3s;
+    }
+
+    .tab-btn:hover, .tab-btn.active {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-animation"></div>
+  <div class="floating-emojis" id="floatingEmojis"></div>
+
+  <!-- 导航栏 -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <div class="logo">
+        <div class="logo-icon">🎬</div>
+        <span class="logo-text funny-font">搞笑检测系统</span>
+      </div>
+      <div class="nav-links">
+        <button class="nav-btn active" data-page="home">首页</button>
+        <button class="nav-btn" id="apiDocBtn">API文档</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 主容器 -->
+  <div class="main-container">
+    <!-- 首页 -->
+    <div id="homePage" class="page">
+      <div class="page-header">
+        <h1 class="page-title funny-font">🎭 视频搞笑检测</h1>
+        <p class="page-subtitle">输入B站视频链接，AI智能分析搞笑程度</p>
+      </div>
+
+      <!-- 搜索区域 -->
+      <div class="search-section">
+        <div class="search-box">
+          <div class="input-wrapper">
+            <span class="input-icon">🔗</span>
+            <input type="text" class="input-field" id="videoUrl" placeholder="输入B站视频链接，如: https://www.bilibili.com/video/BV1xx411c7mD">
+          </div>
+          <button class="btn btn-primary" id="analyzeBtn">
+            <span>🚀</span>
+            开始分析
+          </button>
+        </div>
+      </div>
+
+      <!-- 视频列表 -->
+      <h2 style="margin-bottom: 1rem; color: var(--text-secondary);">📺 已分析的视频</h2>
+      <div class="video-grid" id="videoGrid">
+        <!-- 视频卡片将动态插入 -->
+      </div>
+
+      <!-- 空状态 -->
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">🎭</div>
+        <div class="empty-title">还没有分析过视频</div>
+        <p>输入B站视频链接，开始你的搞笑之旅吧！</p>
+      </div>
+    </div>
+</div>
+
+  <!-- 视频详情模态框 -->
+  <div class="modal-overlay" id="videoModal" style="display: none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modalTitle">视频详情</h2>
+        <button class="modal-close" id="closeModal">×</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- 动态内容 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast 通知 -->
+  <div id="toast" class="toast" style="display: none;"></div>
+
+  <script>
+    // API 基础地址
+    const API_BASE = 'http://localhost:8888';
+
+    // 当前页面
+    let currentPage = 'home';
+
+    // 全局视频数据
+    let videosData = [];
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', () => {
+      initFloatingEmojis();
+      initEventListeners();
+      loadVideos();
+    });
+
+    // 浮动emoji背景
+    function initFloatingEmojis() {
+      const container = document.getElementById('floatingEmojis');
+      const emojis = ['😂', '🤣', '😆', '😅', '🙂', '🎭', '🎬', '🔥', '✨', '💯'];
+
+      for (let i = 0; i < 15; i++) {
+        const emoji = document.createElement('div');
+        emoji.className = 'floating-emoji';
+        emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        emoji.style.left = Math.random() * 100 + '%';
+        emoji.style.animationDelay = Math.random() * 15 + 's';
+        emoji.style.fontSize = (1.5 + Math.random() * 2) + 'rem';
+        container.appendChild(emoji);
+      }
+    }
+
+    // 初始化事件监听
+    function initEventListeners() {
+      // 导航按钮
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const page = btn.dataset.page;
+          if (page) switchPage(page);
+        });
+      });
+
+      // 分析按钮
+      document.getElementById('analyzeBtn').addEventListener('click', analyzeVideo);
+
+      // 模态框关闭
+      document.getElementById('closeModal').addEventListener('click', closeModal);
+      document.getElementById('videoModal').addEventListener('click', (e) => {
+        if (e.target.className === 'modal-overlay') closeModal();
+      });
+
+      // API文档按钮
+      document.getElementById('apiDocBtn').addEventListener('click', () => {
+        window.open('http://localhost:8000/docs', '_blank');
+      });
+
+      // 回车搜索
+      document.getElementById('videoUrl').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') analyzeVideo();
+      });
+    }
+
+    // 切换页面
+    function switchPage(page) {
+      currentPage = page;
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.page === page);
+      });
+      document.querySelectorAll('.page').forEach(p => {
+        p.style.display = p.id === page + 'Page' ? 'block' : 'none';
+      });
+    }
+
+    // Toast 通知
+    function showToast(message, type = 'info') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = 'toast ' + type;
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 3000);
+    }
+
+    // 加载视频列表
+    async function loadVideos() {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/?page=1&page_size=50`);
+        const data = await response.json();
+        videosData = data.videos || [];
+        renderVideoGrid();
+      } catch (error) {
+        console.error('加载视频列表失败:', error);
+        showToast('加载视频列表失败，请确保服务已启动', 'error');
+      }
+    }
+
+    // 渲染视频网格
+    function renderVideoGrid() {
+      const grid = document.getElementById('videoGrid');
+      const emptyState = document.getElementById('emptyState');
+
+      if (videosData.length === 0) {
+        grid.innerHTML = '';
+        emptyState.style.display = 'block';
+        return;
+      }
+
+      emptyState.style.display = 'none';
+      grid.innerHTML = videosData.map((video, index) => {
+        const scoreClass = getScoreClass(video.humor_score);
+        const scoreLevel = getScoreLevel(video.humor_score);
+        const scoreIcon = getScoreIcon(video.humor_score);
+        const videoUrl = `https://www.bilibili.com/video/${video.bvid}`;
+
+        return `
+          <div class="video-card" style="animation-delay: ${index * 0.1}s">
+            <div class="video-thumbnail">
+              <span style="font-size: 4rem;">${scoreIcon}</span>
+              <div class="score-badge ${scoreClass}">${video.humor_score ? video.humor_score.toFixed(1) : '?'}分</div>
+            </div>
+            <div class="video-info">
+              <div class="video-title">${escapeHtml(video.title)}</div>
+              <div class="video-meta">
+                <span>👤 ${escapeHtml(video.owner || '未知')}</span>
+                <span>⏱️ ${formatDuration(video.duration)}</span>
+              </div>
+              <div class="video-meta">
+                <span>📊 ${scoreLevel}</span>
+                <span>🏷️ ${video.tname || '综合'}</span>
+              </div>
+              <div class="video-link">
+                <span>🔗</span>
+                <a href="${videoUrl}" target="_blank" title="${videoUrl}">${videoUrl}</a>
+              </div>
+              <div class="video-actions">
+                <button class="btn btn-secondary" onclick="viewVideoDetail(${video.id})">查看详情</button>
+                <button class="btn btn-primary" onclick="reanalyzeVideo(${video.id})">重新分析</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 分析视频
+    async function analyzeVideo() {
+      const url = document.getElementById('videoUrl').value.trim();
+      if (!url) {
+        showToast('请输入视频链接', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('analyzeBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner" style="width:20px;height:20px;border-width:2px;"></span> 分析中...';
+
+      // 创建进度指示器
+      const progressContainer = document.createElement('div');
+      progressContainer.className = 'progress-indicator';
+      progressContainer.innerHTML = `
+        <div class="progress-step" id="step1">
+          <div class="progress-step-icon">1</div>
+          <span class="progress-step-text">正在解析视频...</span>
+        </div>
+        <div class="progress-step" id="step2">
+          <div class="progress-step-icon">2</div>
+          <span class="progress-step-text">正在采集数据（视频、评论、弹幕）...</span>
+        </div>
+        <div class="progress-step" id="step3">
+          <div class="progress-step-icon">3</div>
+          <span class="progress-step-text">正在提取素材（截图、音频）...</span>
+        </div>
+        <div class="progress-step" id="step4">
+          <div class="progress-step-icon">4</div>
+          <span class="progress-step-text">正在进行AI分析...</span>
+        </div>
+        <div class="progress-step" id="step5">
+          <div class="progress-step-icon">✓</div>
+          <span class="progress-step-text">分析完成！</span>
+        </div>
+      `;
+
+      // 在按钮后插入进度条
+      btn.parentElement.appendChild(progressContainer);
+
+      const updateStep = (stepNum, status) => {
+        const step = document.getElementById(`step${stepNum}`);
+        if (status === 'active') {
+          step.className = 'progress-step active';
+        } else if (status === 'completed') {
+          step.className = 'progress-step completed';
+          step.querySelector('.progress-step-icon').textContent = '✓';
+        } else {
+          step.className = 'progress-step';
+        }
+      };
+
+      try {
+        // 1. 解析视频
+        updateStep(1, 'active');
+        const parseResponse = await fetch(`${API_BASE}/api/v1/parse`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url })
+        });
+
+        if (!parseResponse.ok) {
+          const err = await parseResponse.json();
+          throw new Error(err.detail || '解析失败');
+        }
+
+        const videoInfo = await parseResponse.json();
+        updateStep(1, 'completed');
+        showToast('视频解析成功！', 'success');
+
+        // 2. 采集数据
+        updateStep(2, 'active');
+        const collectResponse = await fetch(`${API_BASE}/api/v1/collect/${videoInfo.bvid}`, {
+          method: 'POST'
+        });
+
+        if (!collectResponse.ok) {
+          const err = await collectResponse.json();
+          throw new Error(err.detail || '采集失败');
+        }
+
+        const collectResult = await collectResponse.json();
+        updateStep(2, 'completed');
+        showToast('数据采集成功！', 'success');
+
+        // 3. 提取素材
+        updateStep(3, 'active');
+        showToast('正在提取素材...', 'info');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        updateStep(3, 'completed');
+
+        // 4. AI 分析
+        updateStep(4, 'active');
+        const analyzeResponse = await fetch(`${API_BASE}/api/v1/analyze/${collectResult.video_id}`, {
+          method: 'POST'
+        });
+
+        if (!analyzeResponse.ok) {
+          const err = await analyzeResponse.json();
+          throw new Error(err.detail || '分析失败');
+        }
+
+        const analyzeResult = await analyzeResponse.json();
+        updateStep(4, 'completed');
+        updateStep(5, 'completed');
+        showToast(`分析完成！搞笑分数: ${analyzeResult.evaluation.humor_score.toFixed(1)}分`, 'success');
+
+        // 5. 刷新列表
+        await loadVideos();
+
+        // 6. 显示详情（包含保存路径）
+        await viewVideoDetail(collectResult.video_id);
+
+      } catch (error) {
+        console.error('分析失败:', error);
+        showToast(error.message || '分析失败', 'error');
+        // 标记所有步骤为失败
+        for (let i = 1; i <= 5; i++) {
+          const step = document.getElementById(`step${i}`);
+          step.className = 'progress-step';
+        }
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>🚀</span> 开始分析';
+        // 3秒后移除进度条
+        setTimeout(() => {
+          if (progressContainer.parentElement) {
+            progressContainer.remove();
+          }
+        }, 3000);
+      }
+    }
+
+    // 查看视频详情
+    async function viewVideoDetail(videoId) {
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/${videoId}`);
+        const video = await response.json();
+
+        const scoreClass = getScoreClass(video.humor_score);
+        const scoreIcon = getScoreIcon(video.humor_score);
+        const evaluation = video.evaluations && video.evaluations[0];
+        const videoUrl = `https://www.bilibili.com/video/${video.bvid}`;
+
+        // 构建保存路径信息
+        let savePathHtml = '';
+        if (video.local_path || video.thumbnail_path) {
+          const paths = [];
+          if (video.local_path) paths.push({ label: '视频文件', path: video.local_path });
+          if (video.thumbnail_path) paths.push({ label: '封面图片', path: video.thumbnail_path });
+
+          savePathHtml = `
+            <div class="save-path-box">
+              <h4>💾 文件保存位置</h4>
+              ${paths.map(p => `
+                <div style="margin-top: 0.75rem;">
+                  <span style="color: var(--text-secondary); font-size: 0.85rem;">${p.label}：</span>
+                  <p>${p.path}</p>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }
+
+        document.getElementById('modalTitle').textContent = video.title;
+        document.getElementById('modalBody').innerHTML = `
+          <div class="score-header">
+            <div class="score-circle ${scoreClass}">
+              ${scoreIcon}
+              <span>${video.humor_score ? video.humor_score.toFixed(1) : '?'}分</span>
+            </div>
+            <div class="score-info">
+              <h3>${video.humor_level || '待分析'}</h3>
+              <p>${video.title}</p>
+            </div>
+          </div>
+
+          <!-- 视频链接 -->
+          <div class="video-link" style="margin-bottom: 1rem;">
+            <span>🔗</span>
+            <a href="${videoUrl}" target="_blank" title="${videoUrl}">${videoUrl}</a>
+          </div>
+
+          <!-- 详细统计 -->
+          <div class="detail-stats">
+            <div class="detail-stat-item">
+              <div class="detail-stat-value">${video.bvid}</div>
+              <div class="detail-stat-label">BV号</div>
+            </div>
+            <div class="detail-stat-item">
+              <div class="detail-stat-value">${formatDuration(video.duration)}</div>
+              <div class="detail-stat-label">时长</div>
+            </div>
+            <div class="detail-stat-item">
+              <div class="detail-stat-value">${video.tname || '综合'}</div>
+              <div class="detail-stat-label">分区</div>
+            </div>
+            <div class="detail-stat-item">
+              <div class="detail-stat-value">${video.platform}</div>
+              <div class="detail-stat-label">平台</div>
+            </div>
+          </div>
+
+          ${evaluation ? `
+            <div class="score-breakdown">
+              <div class="score-item">
+                <div class="score-item-value">${evaluation.visual_score.toFixed(1)}</div>
+                <div class="score-item-label">视觉分</div>
+                <div class="progress-bar">
+                  <div class="progress-fill ${scoreClass}" style="width: ${evaluation.visual_score}%"></div>
+                </div>
+              </div>
+              <div class="score-item">
+                <div class="score-item-value">${evaluation.audio_score.toFixed(1)}</div>
+                <div class="score-item-label">音频分</div>
+                <div class="progress-bar">
+                  <div class="progress-fill ${scoreClass}" style="width: ${evaluation.audio_score}%"></div>
+                </div>
+              </div>
+              <div class="score-item">
+                <div class="score-item-value">${evaluation.text_score.toFixed(1)}</div>
+                <div class="score-item-label">文字分</div>
+                <div class="progress-bar">
+                  <div class="progress-fill ${scoreClass}" style="width: ${evaluation.text_score}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="funny-elements">
+              <h4>🎭 搞笑元素</h4>
+              <div class="element-tags">
+                ${(evaluation.funny_elements || []).map(e => `<span class="element-tag">${e}</span>`).join('')}
+              </div>
+            </div>
+
+            <div style="margin-top: 1.5rem; padding: 1rem; background: var(--bg-card); border-radius: 10px;">
+              <h4 style="margin-bottom: 0.5rem;">📝 AI 分析总结</h4>
+              <p style="color: var(--text-secondary); line-height: 1.6;">${evaluation.summary || '暂无总结'}</p>
+            </div>
+          ` : '<p style="text-align: center; color: var(--text-secondary);">暂无分析结果</p>'}
+
+          ${savePathHtml}
+
+          <div class="comments-section">
+            <h4 style="margin-bottom: 1rem;">💬 评论预览</h4>
+            ${video.comments && video.comments.length > 0
+              ? video.comments.slice(0, 5).map(c => `
+                <div class="comment-item">
+                  <div class="comment-header">
+                    <span class="comment-user">${escapeHtml(c.uname)}</span>
+                    <span class="comment-time">👍 ${c.like}</span>
+                  </div>
+                  <div class="comment-content">${escapeHtml(c.content)}</div>
+                </div>
+              `).join('')
+              : `<p style="color: var(--text-secondary);">暂无评论</p>`
+            }
+          </div>
+
+          <div class="comments-section" style="margin-top: 1rem;">
+            <h4 style="margin-bottom: 1rem;">🎯 数据统计</h4>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+              <div style="background: var(--bg-card); padding: 1rem; border-radius: 10px; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: bold; color: var(--accent-light);">${video.danmu_count || 0}</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">弹幕数量</div>
+              </div>
+              <div style="background: var(--bg-card); padding: 1rem; border-radius: 10px; text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: bold; color: var(--accent-light);">${video.comment_count || 0}</div>
+                <div style="font-size: 0.85rem; color: var(--text-secondary);">评论数量</div>
+              </div>
+            </div>
+            ${video.danmu_count === 0 && video.comment_count === 0 ? '<p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.5rem; text-align: center;">提示：B站评论需要登录态方可爬取，当前仅弹幕数据可用</p>' : ''}
+          </div>
+        `;
+
+        document.getElementById('videoModal').style.display = 'flex';
+
+      } catch (error) {
+        console.error('获取视频详情失败:', error);
+        showToast('获取视频详情失败', 'error');
+      }
+    }
+
+    // 重新分析
+    async function reanalyzeVideo(videoId) {
+      const btn = event.target;
+      btn.disabled = true;
+      btn.textContent = '分析中...';
+
+      try {
+        const response = await fetch(`${API_BASE}/api/v1/analyze/${videoId}`, {
+          method: 'POST'
+        });
+
+        if (!response.ok) {
+          const err = await response.json();
+          throw new Error(err.detail || '分析失败');
+        }
+
+        const result = await response.json();
+        showToast(`重新分析完成！搞笑分数: ${result.evaluation.humor_score.toFixed(1)}分`, 'success');
+        await loadVideos();
+
+      } catch (error) {
+        console.error('重新分析失败:', error);
+        showToast(error.message || '重新分析失败', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '重新分析';
+      }
+    }
+
+    // 关闭模态框
+    function closeModal() {
+      document.getElementById('videoModal').style.display = 'none';
+    }
+
+    // 辅助函数
+    function getScoreClass(score) {
+      if (!score) return 'low';
+      if (score >= 60) return 'high';
+      if (score >= 40) return 'medium';
+      return 'low';
+    }
+
+    function getScoreLevel(score) {
+      if (!score) return '待分析';
+      if (score >= 80) return '非常好笑 😂';
+      if (score >= 60) return '比较搞笑 😄';
+      if (score >= 40) return '一般般 😐';
+      if (score >= 20) return '不太搞笑 😑';
+      return '不好笑 😶';
+    }
+
+    function getScoreIcon(score) {
+      if (!score) return '❓';
+      if (score >= 60) return '😂';
+      if (score >= 40) return '🙂';
+      return '😑';
+    }
+
+    function formatDuration(seconds) {
+      if (!seconds) return '--:--';
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>

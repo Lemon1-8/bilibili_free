@@ -1,0 +1,71 @@
+# 视频搞笑检测系统 - 项目配置文件
+# 使用 YAML 格式，支持多环境配置
+
+# API 配置
+api:
+  host: "127.0.0.1"
+  port: 8888
+  debug: true
+
+# 数据库配置
+database:
+  url: "sqlite:///./data/humor_detect.db"
+  echo: false
+
+# Deep Seek API 配置
+deepseek:
+  api_key: "REMOVED_DEEPSEEK_KEY"
+  base_url: "https://api.deepseek.com"
+  model: "deepseek-chat"
+  temperature: 0.7
+  max_tokens: 2000
+
+# B站爬虫配置
+bilibili:
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+  timeout: 30
+  retry_times: 3
+  headers:
+    referer: "https://www.bilibili.com"
+
+# FFmpeg 配置
+ffmpeg:
+  path: ""
+  frame_interval: 1
+  max_frames: 30
+  thumbnail_size: "320x180"
+
+# MinIO 配置
+minio:
+  endpoint: "localhost:9005"
+  access_key: "admin"
+  secret_key: "123456789"
+  bucket: "humor-videos"
+  secure: false
+
+# B站登录配置（可选，用于下载高清视频）
+bilibili_auth:
+  sessdata: "REMOVED_BILIBILI_SESSDATA"
+  bili_jct: ""
+  buvid3: ""
+
+# 存储配置
+storage:
+  video_dir: "./data/videos"
+  thumbnail_dir: "./data/thumbnails"
+  audio_dir: "./data/audio"
+  subtitle_dir: "./data/subtitles"
+
+# AI 分析配置
+ai_analysis:
+  humor_threshold: 60.0
+  weights:
+    visual: 0.3
+    audio: 0.3
+    text: 0.4
+
+# 日志配置
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "./logs/app.log"
