@@ -75,3 +75,11 @@ GET /api/v1/{video_id}
 - **AI**: Deep Seek API
 - **爬虫**: httpx + requests
 - **视频处理**: FFmpeg
+
+## 界面展示
+
+![](./image_data/PixPin_2026-03-23_13-59-15.png)
+
+![](./image_data/PixPin_2026-03-23_14-00-06.png)
+
+![](./image_data/PixPin_2026-03-23_14-00-25.png)
