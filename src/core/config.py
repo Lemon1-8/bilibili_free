@@ -121,6 +121,23 @@ class AppConfig(BaseModel):
     logging: LoggingConfig
 
 
+_ENV_SECRETS = {
+    "DEEPSEEK_API_KEY": ("deepseek", "api_key"),
+    "BILIBILI_SESSDATA": ("bilibili_auth", "sessdata"),
+    "BILIBILI_JCT": ("bilibili_auth", "bili_jct"),
+    "BILIBILI_BUVID3": ("bilibili_auth", "buvid3"),
+}
+
+
+def _apply_env_overrides(config_dict: dict) -> dict:
+    """环境变量优先于配置文件，避免密钥写入仓库"""
+    for env_name, (section, key) in _ENV_SECRETS.items():
+        value = os.environ.get(env_name)
+        if value:
+            config_dict.setdefault(section, {})[key] = value
+    return config_dict
+
+
 def load_config(config_path: Optional[str] = None) -> AppConfig:
     """
     加载配置文件
@@ -140,7 +157,9 @@ def load_config(config_path: Optional[str] = None) -> AppConfig:
         raise FileNotFoundError(f"配置文件不存在: {config_path}")
 
     with open(config_path, "r", encoding="utf-8") as f:
-        config_dict = yaml.safe_load(f)
+        config_dict = yaml.safe_load(f) or {}
+
+    config_dict = _apply_env_overrides(config_dict)
 
     return AppConfig(**config_dict)
 

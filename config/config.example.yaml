@@ -1,5 +1,6 @@
-# 视频搞笑检测系统 - 项目配置文件
-# 使用 YAML 格式，支持多环境配置
+# 视频搞笑检测系统 - 配置示例
+# 复制为 config/config.yaml 后按需修改：cp config/config.example.yaml config/config.yaml
+# 密钥优先从环境变量读取，也可以只在本地的 config.yaml 中填写（该文件已被 .gitignore 忽略）
 
 # API 配置
 api:
@@ -13,8 +14,9 @@ database:
   echo: false
 
 # Deep Seek API 配置
+# api_key 也可以通过 DEEPSEEK_API_KEY 环境变量提供，环境变量优先
 deepseek:
-  api_key: "REMOVED_DEEPSEEK_KEY"
+  api_key: ""
   base_url: "https://api.deepseek.com"
   model: "deepseek-chat"
   temperature: 0.7
@@ -44,8 +46,9 @@ minio:
   secure: false
 
 # B站登录配置（可选，用于下载高清视频）
+# 也可以通过 BILIBILI_SESSDATA / BILIBILI_JCT / BILIBILI_BUVID3 环境变量提供
 bilibili_auth:
-  sessdata: "REMOVED_BILIBILI_SESSDATA"
+  sessdata: ""
   bili_jct: ""
   buvid3: ""
 

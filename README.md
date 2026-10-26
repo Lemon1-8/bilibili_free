@@ -12,12 +12,28 @@ pip install -r requirements.txt
 
 ### 2. 配置
 
-编辑 `config/config.yaml`，填入你的 Deep Seek API Key：
+复制示例配置：
 
-```yaml
-deepseek:
-  api_key: "your-api-key-here"
+```bash
+cp config/config.example.yaml config/config.yaml
 ```
+
+密钥不要提交到仓库，推荐用环境变量注入（环境变量优先于配置文件）：
+
+```bash
+export DEEPSEEK_API_KEY="你的 Key"
+export BILIBILI_SESSDATA="..."   # 可选，下载高清视频用
+export BILIBILI_JCT="..."        # 可选
+export BILIBILI_BUVID3="..."     # 可选
+```
+
+Windows PowerShell 对应写法：
+
+```powershell
+$env:DEEPSEEK_API_KEY = "你的 Key"
+```
+
+也可以只在本地的 `config/config.yaml` 中填写，该文件已被 `.gitignore` 忽略。
 
 ### 3. 运行
 

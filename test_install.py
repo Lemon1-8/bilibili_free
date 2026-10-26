@@ -2,6 +2,7 @@
 测试脚本 - 验证系统是否正确安装
 """
 
+import os
 import sys
 import subprocess
 from pathlib import Path
@@ -109,24 +110,34 @@ def check_project_structure():
 
 
 def check_api_key():
-    """检查 API Key"""
+    """检查 API Key 是否已配置（不校验具体值）"""
     print("\n" + "=" * 50)
     print("检查 API Key...")
-    
+
+    if os.environ.get("DEEPSEEK_API_KEY", "").strip():
+        print("✅ 已通过环境变量 DEEPSEEK_API_KEY 配置")
+        return True
+
     config_path = Path("config/config.yaml")
     if not config_path.exists():
         print("❌ 配置文件不存在")
         return False
-    
-    with open(config_path, "r", encoding="utf-8") as f:
-        content = f.read()
-    
-    if "REMOVED_DEEPSEEK_KEY" in content:
+
+    try:
+        import yaml
+        with open(config_path, "r", encoding="utf-8") as f:
+            config = yaml.safe_load(f) or {}
+        api_key = str((config.get("deepseek") or {}).get("api_key", "")).strip()
+    except Exception as exc:
+        print(f"❌ 配置文件解析失败: {exc}")
+        return False
+
+    if api_key and api_key != "your-api-key-here":
         print("✅ Deep Seek API Key 已配置")
         return True
-    else:
-        print("❌ Deep Seek API Key 未配置")
-        return False
+
+    print("❌ Deep Seek API Key 未配置（写入 config/config.yaml 或设置 DEEPSEEK_API_KEY）")
+    return False
 
 
 def main():
